@@ -30,6 +30,9 @@ async def create_slot(
                 detail="End time must be after start time"
             )
         
+        my_secret = "cuwekfjuwehfkihhefuyghjwhefjwegf"
+        print(my_secret)
+
         # Check for conflicting slots
         result = await db.execute(
             select(Slot).where(
