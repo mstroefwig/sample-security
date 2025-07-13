@@ -1,0 +1,200 @@
+version: 3
+sources:
+  - name: default
+    kind: postgres
+    configuration:
+      connection_info:
+        database_url:
+          from_env: HASURA_GRAPHQL_DATABASE_URL
+        isolation_level: read-committed
+        pool_settings:
+          connection_lifetime: 600
+          idle_timeout: 180
+          max_connections: 50
+          retries: 1
+        use_prepared_statements: true
+    tables:
+      - table:
+          name: users
+          schema: public
+        array_relationships:
+          - name: bookings
+            using:
+              foreign_key_constraint_on:
+                column: user_id
+                table:
+                  name: bookings
+                  schema: public
+          - name: created_slots
+            using:
+              foreign_key_constraint_on:
+                column: created_by
+                table:
+                  name: slots
+                  schema: public
+        select_permissions:
+          - role: user
+            permission:
+              columns:
+                - id
+                - email
+                - first_name
+                - last_name
+                - role
+                - is_active
+                - created_at
+                - updated_at
+              filter:
+                id:
+                  _eq: X-Hasura-User-Id
+          - role: admin
+            permission:
+              columns:
+                - id
+                - email
+                - first_name
+                - last_name
+                - role
+                - is_active
+                - created_at
+                - updated_at
+              filter: {}
+      - table:
+          name: slots
+          schema: public
+        object_relationships:
+          - name: creator
+            using:
+              foreign_key_constraint_on: created_by
+        array_relationships:
+          - name: bookings
+            using:
+              foreign_key_constraint_on:
+                column: slot_id
+                table:
+                  name: bookings
+                  schema: public
+        select_permissions:
+          - role: user
+            permission:
+              columns:
+                - id
+                - title
+                - description
+                - start_time
+                - end_time
+                - is_available
+                - max_participants
+                - current_participants
+                - created_by
+                - created_at
+                - updated_at
+              filter: {}
+          - role: admin
+            permission:
+              columns:
+                - id
+                - title
+                - description
+                - start_time
+                - end_time
+                - is_available
+                - max_participants
+                - current_participants
+                - created_by
+                - created_at
+                - updated_at
+              filter: {}
+        insert_permissions:
+          - role: admin
+            permission:
+              columns:
+                - title
+                - description
+                - start_time
+                - end_time
+                - max_participants
+              check: {}
+        update_permissions:
+          - role: admin
+            permission:
+              columns:
+                - title
+                - description
+                - start_time
+                - end_time
+                - is_available
+                - max_participants
+              filter: {}
+        delete_permissions:
+          - role: admin
+            permission:
+              filter: {}
+      - table:
+          name: bookings
+          schema: public
+        object_relationships:
+          - name: slot
+            using:
+              foreign_key_constraint_on: slot_id
+          - name: user
+            using:
+              foreign_key_constraint_on: user_id
+        select_permissions:
+          - role: user
+            permission:
+              columns:
+                - id
+                - slot_id
+                - user_id
+                - status
+                - notes
+                - booked_at
+                - cancelled_at
+              filter:
+                user_id:
+                  _eq: X-Hasura-User-Id
+          - role: admin
+            permission:
+              columns:
+                - id
+                - slot_id
+                - user_id
+                - status
+                - notes
+                - booked_at
+                - cancelled_at
+              filter: {}
+        insert_permissions:
+          - role: user
+            permission:
+              columns:
+                - slot_id
+                - notes
+              check:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        update_permissions:
+          - role: user
+            permission:
+              columns:
+                - notes
+                - status
+              filter:
+                user_id:
+                  _eq: X-Hasura-User-Id
+          - role: admin
+            permission:
+              columns:
+                - notes
+                - status
+              filter: {}
+        delete_permissions:
+          - role: user
+            permission:
+              filter:
+                user_id:
+                  _eq: X-Hasura-User-Id
+          - role: admin
+            permission:
+              filter: {}

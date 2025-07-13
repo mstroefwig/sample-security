@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: scheduler
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./hasura/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Hasura GraphQL Engine
+  hasura:
+    image: hasura/graphql-engine:v2.36.0
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgresql://postgres:password@postgres:5432/scheduler
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key":"mysecretjwtkey12345678901234567890"}'
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+      HASURA_GRAPHQL_CORS_DOMAIN: "*"
+      HASURA_GRAPHQL_ENABLE_ALLOWLIST: "false"
+    volumes:
+      - ./hasura/metadata:/hasura-metadata
+      - ./hasura/migrations:/hasura-migrations
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
