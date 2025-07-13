@@ -1,8 +1,3 @@
-# DEPRECATED: This file is kept for compatibility only
-# The project has been migrated to use uv and pyproject.toml
-# For new installations, use: uv sync
-# For adding dependencies, use: uv add <package>
-
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0

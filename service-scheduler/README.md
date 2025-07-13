@@ -34,6 +34,8 @@ service-scheduler/
    # Install Docker and Docker Compose
    # Install Node.js 18+ and npm
    # Install Python 3.11+
+   # Install uv (Python package manager)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
 2. **Start the development environment**
@@ -51,8 +53,8 @@ service-scheduler/
 4. **Install and run the backend**
    ```bash
    cd backend
-   pip install -r requirements.txt
-   uvicorn main:app --reload
+   uv sync
+   uv run uvicorn main:app --reload
    ```
 
 ## User Roles
@@ -142,7 +144,7 @@ HASURA_GRAPHQL_JWT_SECRET={"type":"HS256","key":"your-jwt-secret-key"}
 ```bash
 # Backend tests
 cd backend
-pytest
+uv run pytest
 
 # Frontend tests
 cd frontend
@@ -356,10 +358,8 @@ docker-compose up -d
 
 # Backend
 cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --reload
+uv sync
+uv run uvicorn main:app --reload
 
 # Frontend  
 cd frontend
@@ -376,6 +376,49 @@ ng serve
 #### **4. Default Login**
 - **Admin**: admin@example.com / admin123
 - **User**: user1@example.com / admin123
+
+### **Next Steps for Development:**
+
+## Migration from pip to uv
+
+This project has been migrated from using `pip` to `uv` for Python package management. If you have an existing installation:
+
+### **For existing developers:**
+
+1. **Install uv** (if not already installed):
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   source $HOME/.cargo/env
+   ```
+
+2. **Remove old virtual environment**:
+   ```bash
+   cd backend
+   rm -rf venv/
+   ```
+
+3. **Install dependencies with uv**:
+   ```bash
+   uv sync
+   ```
+
+4. **Run the application**:
+   ```bash
+   uv run uvicorn main:app --reload
+   ```
+
+### **Benefits of uv:**
+- **Faster**: 10-100x faster than pip for resolving and installing packages
+- **Reliable**: Better dependency resolution and lock files
+- **Simple**: Single tool for virtual environments and package management
+- **Modern**: Built in Rust with modern Python packaging standards
+
+### **Common uv commands:**
+- `uv sync` - Install all dependencies (replaces `pip install -r requirements.txt`)
+- `uv add <package>` - Add a new dependency
+- `uv remove <package>` - Remove a dependency
+- `uv run <command>` - Run a command in the project environment
+- `uv lock` - Update the lock file
 
 ### **Next Steps for Development:**
 

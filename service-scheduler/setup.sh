@@ -59,18 +59,22 @@ print_status "Database services are running"
 print_info "Setting up Python backend..."
 cd backend
 
-# Create virtual environment if it doesn't exist
-if [ ! -d "venv" ]; then
-    print_info "Creating Python virtual environment..."
-    python3 -m venv venv
+# Check if this is an existing installation with old venv
+if [ -d "venv" ]; then
+    print_warning "Found old pip-based virtual environment. This project now uses uv."
+    print_info "Run './migrate-to-uv.sh' to migrate, or remove 'venv/' manually."
 fi
 
-# Activate virtual environment
-source venv/bin/activate
+# Check if uv is installed
+if ! command -v uv &> /dev/null; then
+    print_warning "uv not found. Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    source $HOME/.cargo/env
+fi
 
-# Install Python dependencies
-print_info "Installing Python dependencies..."
-pip install -r requirements.txt
+# Install Python dependencies with uv
+print_info "Installing Python dependencies with uv..."
+uv sync
 
 print_status "Backend setup complete"
 
@@ -101,8 +105,7 @@ echo "To start the application:"
 echo ""
 echo "${BLUE}1. Start the backend:${NC}"
 echo "   cd backend"
-echo "   source venv/bin/activate"
-echo "   uvicorn main:app --reload"
+echo "   uv run uvicorn main:app --reload"
 echo ""
 echo "${BLUE}2. Start the frontend (in a new terminal):${NC}"
 echo "   cd frontend"
