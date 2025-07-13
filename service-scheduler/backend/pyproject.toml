@@ -5,7 +5,6 @@ description = "FastAPI backend for service scheduling application"
 authors = [
     {name = "Service Scheduler Team", email = "team@example.com"},
 ]
-readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi==0.104.1",
