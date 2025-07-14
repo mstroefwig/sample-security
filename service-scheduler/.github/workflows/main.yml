@@ -2,19 +2,12 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
 
-name: (dev) Build and deploy Python project to Azure Function App
+name: (main) Build and deploy Python project to Azure Function App
 
 on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'azure_infrastructure/**'
-      - 'README.md'
-      - '.gitignore'
-      - 'bin/**'
-      - '.devcontainer/**'
-      - '.rest_client/**'
   workflow_dispatch: # Permit launching from Github webui
 
 env:
