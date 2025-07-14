@@ -4,6 +4,9 @@
 
 name: (main) Build and deploy Python project to Azure Function App
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
