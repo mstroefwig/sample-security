@@ -122,4 +122,4 @@ echo "   Password: admin123"
 echo ""
 echo "${GREEN}Happy coding! 🚀${NC}"
 
-echo "3"
+echo "1"
