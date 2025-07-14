@@ -1,0 +1,49 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
+
+name: (dev) Build and deploy Python project to Azure Function App
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'azure_infrastructure/**'
+      - 'README.md'
+      - '.gitignore'
+      - 'bin/**'
+      - '.devcontainer/**'
+      - '.rest_client/**'
+  workflow_dispatch: # Permit launching from Github webui
+
+env:
+  APP_NAME: 'security-test'
+
+jobs:
+  build_and_deploy_code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # enable comparison to previous commit in pychange_check
+
+      - name: Check for Python Changes
+        id: pychange_check
+        run: |
+          echo "needs_deployment=1" >> $GITHUB_OUTPUT # For now, effectively disable this check!
+
+      - name: Install uv
+        if: steps.pychange_check.outputs.needs_deployment == '1'
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: "Set up Python"
+        if: steps.pychange_check.outputs.needs_deployment == '1'
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
