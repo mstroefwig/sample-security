@@ -22,21 +22,9 @@ jobs:
         with:
           fetch-depth: 2 # enable comparison to previous commit in pychange_check
 
-      - name: Check for Python Changes
-        id: pychange_check
-        run: |
-          echo "needs_deployment=1" >> $GITHUB_OUTPUT # For now, effectively disable this check!
-
-      - name: Install uv
-        if: steps.pychange_check.outputs.needs_deployment == '1'
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-
       - name: "Set up Python"
         if: steps.pychange_check.outputs.needs_deployment == '1'
         uses: actions/setup-python@v5
         with:
-          python-version-file: ".python-version"
+          python-version-file: "service-scheduler/backend/.python-version"
 
