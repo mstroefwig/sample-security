@@ -121,3 +121,5 @@ echo "   Email: admin@example.com"
 echo "   Password: admin123"
 echo ""
 echo "${GREEN}Happy coding! 🚀${NC}"
+
+
