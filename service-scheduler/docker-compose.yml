@@ -39,7 +39,7 @@ services:
       - ./hasura/metadata:/hasura-metadata
       - ./hasura/migrations:/hasura-migrations
 
-  # Redis for caching (optional)
+  # Redis for caching (optional?)
   redis:
     image: redis:7-alpine
     ports:
